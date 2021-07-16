@@ -14,7 +14,7 @@ type LRU struct {
 	Maxsize int
 }
 
-func (lru LRU) Get(key string) string {
+func (lru *LRU) Get(key string) string {
 	i := lru.data[key]
 	if i != nil {
 		lru.ul.Remove(i.pos)
@@ -25,12 +25,17 @@ func (lru LRU) Get(key string) string {
 	}
 }
 
-func (lru LRU) Set(key string, value string) {
-	i := &item{key: key, value: value}
-	lru.data[key] = i
-	lru.ul.Remove(i.pos)
+func (lru *LRU) Set(key string, value string) {
+	i := lru.data[key]
+	if i == nil {
+		i = &item{key: key, value: value}
+		lru.data[key] = i
+	} else {
+		lru.ul.Remove(i.pos)
+	}
 	lru.ul.PushBack(i)
 	if lru.ul.Len() > lru.Maxsize {
+		delete(lru.data, lru.ul.Front().Value.(*item).key)
 		lru.ul.Remove(lru.ul.Front())
 	}
 	i.pos = lru.ul.Back()
