@@ -36,7 +36,7 @@ func (lru LRU) Set(key string, value string) {
 	i.pos = lru.ul.Back()
 }
 
-func (lru LRU) Init() {
+func (lru *LRU) Init() {
 	lru.data = make(map[string]*item)
 	lru.ul = list.List{}
 }
